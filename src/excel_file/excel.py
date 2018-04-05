@@ -20,7 +20,6 @@ class OperateExcel:
         print(wb.sheetnames)
         sheetnames = wb.sheetnames
         first_sheet = wb[sheetnames[0]]
-        print first_sheet
 
         print "Work Sheet Titile:", first_sheet.title
         print "Work Sheet Max Rows:", first_sheet.max_row
@@ -40,9 +39,7 @@ class OperateExcel:
             data_store[row] = temp_list
 
         # 打印字典数据个数
-        print 'Total:%d' % len(data_store)
         content_json = json.dumps(data_store, encoding="UTF-8", ensure_ascii=False)
-        print content_json
         return content_json
 
     # 将数据导出到excel文件中
@@ -53,16 +50,11 @@ class OperateExcel:
         first_sheet.title = u"哈哈"
         if data is not None:
             content = json.loads(data, encoding="UTF-8")
-            print content
-
             row_list = {}
             for row in content.iterkeys():
                 row_list[int(row)] = row
 
-            print row_list
-            for row in range(1, len(row_list) + 1):
-                print u'second_row : %s' % row
-                print u'second_content[row_list[row]] : %s' % content[row_list[row]]
+            for row in range(0, len(row_list) ):
                 first_sheet.append(content[row_list[row]])
 
         wb.save(self.store_filename)

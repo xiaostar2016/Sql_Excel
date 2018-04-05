@@ -61,35 +61,26 @@ class OperateMysql:
     # 创建表格
     def create_table(self, table_name='default', head_of_table=[]):
         cursor = self.get_cursor()
-        print head_of_table
+
         if cursor is not None:
             cursor.execute("DROP TABLE IF EXISTS %s" % table_name)
             SQL = """CREATE TABLE %s ( 
                         id int(4) primary key not null auto_increment""" % table_name
             if len(head_of_table) is not 0:
                 for num in range(0, len(head_of_table)):
-                    print head_of_table[num]
                     for key, value in head_of_table[num].items():
                         SQL += """, 
                           %s %s""" % (key, value)
             SQL += """
                      )"""
-            print SQL
-            # cursor.execute(SQL)
-            try:
-                # 执行sql语句
-                cursor.execute(SQL)
-                # 提交到数据库执行
-                self.db.commit()
-            except:
-                # Rollback in case there is any error
-                self.db.rollback()
+
+            cursor.execute(SQL)
             print '%s 表格创建成功' % table_name
 
     # 插入数据
     def insert_table(self, table_name='default', content_data=[]):
         cursor = self.get_cursor()
-        print content_data
+
         if cursor is not None:
             SQL = "insert into %s values( " % table_name
             if len(content_data) is not 0:
@@ -101,7 +92,6 @@ class OperateMysql:
                         SQL += "'%s' " % content_data[num]
                     print content_data[num]
             SQL += ")"
-            print SQL
 
             try:
                 # 执行sql语句
@@ -130,7 +120,7 @@ class OperateMysql:
                 #         SQL += "'%s' " % data[num]
                 #     print data[num]
             SQL += ""
-            print SQL
+
             try:
                 # 执行sql语句
                 cursor.execute(SQL)
@@ -158,7 +148,6 @@ class OperateMysql:
                 #         SQL += "'%s' " % data[num]
                 #     print data[num]
             SQL += ""
-            print SQL
             try:
                 # 执行sql语句
                 cursor.execute(SQL)
@@ -174,7 +163,6 @@ class OperateMysql:
     # 查询数据
     def query_table(self, table_name='default', query_string_sql=''):
         cursor = self.get_cursor()
-        print query_string_sql
         if cursor is not None:
             SQL = "select * from %s" % table_name
             if query_string_sql.strip() is not '':
@@ -186,12 +174,34 @@ class OperateMysql:
                 #         SQL += "'%s' " % data[num]
                 #     print data[num]
             SQL += ""
-            print SQL
             cursor.execute(SQL)
-            result = cursor.fetchone()
-            result_list = []
-            for num in range(1, len(result)):
-                result_list.append(result[num])
-            print result_list
-            print 'query 完成'
-            return result_list
+            result = cursor.fetchall()
+
+            if result is not None:
+                result_list = []
+                for num in range(1, len(result)):
+                    result_list.append(result[num])
+                print 'query 完成，查询结果： %s' % result_list
+                return result_list
+            else:
+                print 'query 完成，查询结果不存在'
+                return None
+
+    # 获取表头
+    def get_table_header(self, table_name='default'):
+        cursor = self.get_cursor()
+        if cursor is not None:
+            SQL = "show columns from %s" % table_name
+            cursor.execute(SQL)
+            result = cursor.fetchall()
+
+            if result is not None:
+                result_list = []
+                for num in range(1, len(result)):
+                    result_list.append(result[num][0])
+                print '获取表头 ：%s' % result_list
+                return result_list
+
+            else:
+                print '获取表头，表头不存在'
+                return None
